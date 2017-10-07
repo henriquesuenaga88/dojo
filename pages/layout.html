@@ -1,0 +1,10 @@
+<h1>{{.PageTitle}}<h1>
+<ul>
+    {{range .Dojos}}
+        {{if .Done}}
+            <li>{{.Title}} - Done</li>
+        {{else}}
+            <li>{{.Title}}</li>
+        {{end}}
+    {{end}}
+</ul>
