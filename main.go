@@ -22,50 +22,55 @@ type DojoPageData struct {
 }
 
 func main() {
+	http.HandleFunc("/", loadAll)
+	http.HandleFunc("/dojo", dojo)
+
+	http.ListenAndServe(":3000", nil)
+}
+
+func loadAll(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("pages/layout.html"))
 
-	session, err := mgo.Dial("localhost")
-	if err != nil {
-		log.Fatal(err)
-	}
+	session := getSession()
 	defer session.Close()
 
 	c := session.DB("dojo").C("dojo")
-
-
-	count, err2 := c.Find(bson.M{}).Count()
-	if err2 != nil {
-		panic(err)
-	}
-
-	// FOR TEST
-	if count == 0 {
-		dojoteste1 := Dojo{Id: 1, Title: "Teste 1", Done: false}
-		c.Insert(dojoteste1)
-
-		dojoteste2 := Dojo{Id: 2, Title: "Teste 2", Done: false}
-		c.Insert(dojoteste2)
-
-		dojoteste3 := Dojo{Id: 3, Title: "Teste 3", Done: false}
-		c.Insert(dojoteste3)
-
-		dojoteste4 := Dojo{Id: 4, Title: "Teste 4", Done: false}
-		c.Insert(dojoteste4)
-	}
-
 	var dojos [] Dojo
 	c.Find(bson.M{}).All(&dojos)
 
-	fmt.Println(dojos[0].Title)
+	data := DojoPageData{
+		PageTitle: "Dojo's",
+		Dojos: dojos,
+	}
+	tmpl.Execute(w, data)
 
+}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := DojoPageData{
-			PageTitle: "Dojo's",
-			Dojos: dojos,
-		}
-		tmpl.Execute(w, data)
-	})
+func dojo(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("method:", r.Method) //get request method
+	if r.Method == "GET" {
+		t := template.Must(template.ParseFiles("pages/dojo.html"))
+		t.Execute(w, nil)
+	} else {
+		r.ParseForm()
+		// logic part of log in
+		fmt.Println("title:", r.Form["title"])
 
-	http.ListenAndServe(":3000", nil)
+		session := getSession()
+		defer session.Close()
+
+		c := session.DB("dojo").C("dojo")
+		c.Insert(Dojo{Id: 0, Title: r.Form["title"][0], Done: false})
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
+
+func getSession() *mgo.Session {
+	session, err := mgo.Dial("localhost")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return session
 }
