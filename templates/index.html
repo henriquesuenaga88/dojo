@@ -1,0 +1,16 @@
+{{ define "content" }}
+
+    <h3>{{.PageTitle}}<h3>
+
+    <ul class="list-group">
+        {{range .Dojos}}
+            {{if .Done}}
+                <li class="list-group-item">{{.Title}} - Done</li>
+            {{else}}
+                <li class="list-group-item">{{.Title}}</li>
+            {{end}}
+        {{end}}
+    </ul>
+    <a href="/dojo" type="button" class="btn btn-primary"> Novo Dojo</a>
+
+{{ end }}

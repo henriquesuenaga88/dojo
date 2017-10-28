@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"html/template"
 	"net/http"
+	"dojo/render"
 )
 
 type Dojo struct {
@@ -24,8 +25,6 @@ type DojoHandler struct {
 }
 
 func (h *DojoHandler) FindAll(w http.ResponseWriter, r *http.Request){
-	tmpl := template.Must(template.ParseFiles("templates/layout.html"))
-
 	var dojos []Dojo
 	h.Db.Find(bson.M{}).All(&dojos)
 
@@ -33,7 +32,7 @@ func (h *DojoHandler) FindAll(w http.ResponseWriter, r *http.Request){
 		PageTitle: "Dojo's",
 		Dojos:     dojos,
 	}
-	tmpl.Execute(w, data)
+	render.Render(w, "index", data)
 }
 
 func (h *DojoHandler) NewDojo(w http.ResponseWriter, r *http.Request) {

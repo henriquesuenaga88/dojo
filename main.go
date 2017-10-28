@@ -7,7 +7,13 @@ import (
 	"github.com/creamdog/gonfig"
 	"os"
 	"dojo/dojo"
+	"io"
+	"time"
 )
+
+
+const STATIC_URL string = "/static/"
+const STATIC_ROOT string = "static/"
 
 type Config struct {
 	Database string
@@ -23,6 +29,7 @@ func main() {
 
 	http.HandleFunc("/", h.FindAll)
 	http.HandleFunc("/dojo", h.NewDojo)
+	http.HandleFunc(STATIC_URL, StaticHandler)
 
 	http.ListenAndServe(":3000", nil)
 }
@@ -42,4 +49,17 @@ func (config *Config) getSession() *mgo.Session {
 		log.Fatal(err)
 	}
 	return session
+}
+
+func StaticHandler(w http.ResponseWriter, req *http.Request) {
+	static_file := req.URL.Path[len(STATIC_URL):]
+	if len(static_file) != 0 {
+		f, err := http.Dir(STATIC_ROOT).Open(static_file)
+		if err == nil {
+			content := io.ReadSeeker(f)
+			http.ServeContent(w, req, static_file, time.Now(), content)
+			return
+		}
+	}
+	http.NotFound(w, req)
 }
