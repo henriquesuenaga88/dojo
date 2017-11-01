@@ -1,11 +1,12 @@
 package render
 
 import (
-	"net/http"
 	"fmt"
-	"log"
 	"html/template"
+	"log"
+	"net/http"
 )
+
 func Render(w http.ResponseWriter, tmpl string, data interface{}) {
 	tmpl_list := []string{"templates/layout.html",
 		fmt.Sprintf("templates/%s.html", tmpl)}
