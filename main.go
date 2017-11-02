@@ -1,16 +1,15 @@
 package main
 
 import (
-	"net/http"
-	"gopkg.in/mgo.v2"
-	"log"
-	"github.com/creamdog/gonfig"
-	"os"
 	"dojo/dojo"
+	"github.com/creamdog/gonfig"
+	"gopkg.in/mgo.v2"
 	"io"
+	"log"
+	"net/http"
+	"os"
 	"time"
 )
-
 
 const STATIC_URL string = "/static/"
 const STATIC_ROOT string = "static/"

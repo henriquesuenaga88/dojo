@@ -1,12 +1,12 @@
 package dojo
 
 import (
+	"dojo/render"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"html/template"
 	"net/http"
-	"dojo/render"
 )
 
 type Dojo struct {
@@ -24,7 +24,7 @@ type DojoHandler struct {
 	Db *mgo.Collection
 }
 
-func (h *DojoHandler) FindAll(w http.ResponseWriter, r *http.Request){
+func (h *DojoHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 	var dojos []Dojo
 	h.Db.Find(bson.M{}).All(&dojos)
 
@@ -48,4 +48,3 @@ func (h *DojoHandler) NewDojo(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
-
