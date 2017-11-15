@@ -2,10 +2,8 @@ package dojo
 
 import (
 	"dojo/render"
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"html/template"
 	"net/http"
 )
 
@@ -13,6 +11,14 @@ type Dojo struct {
 	Id    int
 	Title string
 	Done  bool
+}
+
+func (dojo *Dojo) isValid() bool {
+	if dojo.Title != "" {
+		return true
+	}
+
+	return false
 }
 
 type DojoPageData struct {
@@ -36,15 +42,17 @@ func (h *DojoHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DojoHandler) NewDojo(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method) //get request method
 	if r.Method == "GET" {
-		t := template.Must(template.ParseFiles("templates/dojo/dojo.html"))
-		t.Execute(w, nil)
+		render.Render(w, "dojo/dojo", nil)
 	} else {
 		r.ParseForm()
-		fmt.Println("title:", r.Form["title"])
 
-		h.Db.Insert(Dojo{Id: 0, Title: r.Form["title"][0], Done: false})
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		dojo := Dojo{Id: 0, Title: r.Form["title"][0], Done: false}
+		if dojo.isValid() {
+			h.Db.Insert(dojo)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		} else {
+			render.Render(w, "dojo/dojo", nil)
+		}
 	}
 }
