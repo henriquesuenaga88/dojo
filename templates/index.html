@@ -4,11 +4,7 @@
 
     <ul class="list-group">
         {{range .Dojos}}
-            {{if .Done}}
-                <li class="list-group-item">{{.Title}} - Done</li>
-            {{else}}
-                <li class="list-group-item">{{.Title}}</li>
-            {{end}}
+            <li class="list-group-item">{{.Title}} {{if .Done}} - Done {{end}} <a href="/detail?dojo={{.Id}}" type="button" class="btn btn-info float-right btn-xs"> Detalhes</a></li>
         {{end}}
     </ul>
     <a href="/dojo" type="button" class="btn btn-primary"> Novo Dojo</a>

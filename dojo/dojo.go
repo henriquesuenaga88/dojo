@@ -5,6 +5,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"strconv"
 )
 
 type Dojo struct {
@@ -55,4 +56,12 @@ func (h *DojoHandler) NewDojo(w http.ResponseWriter, r *http.Request) {
 			render.Render(w, "dojo/dojo", nil)
 		}
 	}
+}
+
+func (h *DojoHandler) ShowDetail(w http.ResponseWriter, r *http.Request) {
+	dojo := Dojo{}
+	var identificador, _ = strconv.ParseInt(r.URL.Query()["dojo"][0], 0, 64)
+	h.Db.Find(bson.M{"id" : identificador}).One(&dojo)
+
+	// TODO
 }

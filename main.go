@@ -28,6 +28,7 @@ func main() {
 
 	http.HandleFunc("/", h.FindAll)
 	http.HandleFunc("/dojo", h.NewDojo)
+	http.HandleFunc("/detail", h.ShowDetail)
 	http.HandleFunc(STATIC_URL, StaticHandler)
 
 	http.ListenAndServe(":3000", nil)
